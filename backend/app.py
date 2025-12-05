@@ -3,13 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 CORS(app)
 
 # -------------------------------------------------
 # CONFIGURACIÓN BASE DE DATOS
 # -------------------------------------------------
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+# Render requiere que SQLite esté dentro de /instance
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -37,7 +38,7 @@ with app.app_context():
     db.create_all()
 
 # -------------------------------------------------
-# SERVIR EL FRONTEND (index.html)
+# SERVIR FRONTEND
 # -------------------------------------------------
 @app.route("/")
 def home():
@@ -92,7 +93,7 @@ def eliminar(id):
     return jsonify({"msg": "Eliminado"})
 
 # -------------------------------------------------
-# INICIAR SERVIDOR
+# INICIAR SERVIDOR (LOCAL)
 # -------------------------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
