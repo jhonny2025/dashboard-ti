@@ -3,14 +3,23 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 
+# -------------------------------------------------
+# CREAR APP
+# -------------------------------------------------
 app = Flask(__name__, template_folder="templates")
 CORS(app)
 
 # -------------------------------------------------
 # CONFIGURACIÓN BASE DE DATOS
 # -------------------------------------------------
-# Render requiere que SQLite esté dentro de /instance
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/database.db"
+# Usar ruta absoluta dentro del proyecto (Render requiere carpetas específicas)
+basedir = os.path.abspath(os.path.dirname(__file__))
+instance_dir = os.path.join(basedir, "instance")
+if not os.path.exists(instance_dir):
+    os.makedirs(instance_dir)  # Crear carpeta si no existe
+
+db_file = os.path.join(instance_dir, "database.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -33,9 +42,12 @@ class Registro(db.Model):
     csat = db.Column(db.Integer)
     sla = db.Column(db.Integer)
 
-# Crear BD si no existe
+# -------------------------------------------------
+# CREAR BD SI NO EXISTE
+# -------------------------------------------------
 with app.app_context():
-    db.create_all()
+    if not os.path.exists(db_file):
+        db.create_all()
 
 # -------------------------------------------------
 # SERVIR FRONTEND
