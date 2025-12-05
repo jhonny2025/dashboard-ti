@@ -1,53 +1,44 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 
-# -------------------------------------------------
-# CREAR APP
-# -------------------------------------------------
 app = Flask(__name__, template_folder="templates")
 CORS(app)
 
 # -------------------------------------------------
 # CONFIGURACIÓN BASE DE DATOS
 # -------------------------------------------------
-# Usar ruta absoluta dentro del proyecto (Render requiere carpetas específicas)
-basedir = os.path.abspath(os.path.dirname(__file__))
-instance_dir = os.path.join(basedir, "instance")
-if not os.path.exists(instance_dir):
-    os.makedirs(instance_dir)  # Crear carpeta si no existe
+# Render requiere que SQLite esté dentro de /instance
+if not os.path.exists('instance'):
+    os.makedirs('instance')
 
-db_file = os.path.join(instance_dir, "database.db")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
 # -------------------------------------------------
-# MODELO
+# MODELO (todos los campos son String)
 # -------------------------------------------------
 class Registro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.String(50))
     titulo = db.Column(db.String(200))
     descripcion = db.Column(db.String(500))
-    carga = db.Column(db.Integer)
-    tiempo_respuesta = db.Column(db.Integer)
-    calificacion = db.Column(db.Integer)
-    mttr = db.Column(db.Integer)
-    ir = db.Column(db.Integer)
-    ath = db.Column(db.Integer)
-    recontactos = db.Column(db.Integer)
-    csat = db.Column(db.Integer)
-    sla = db.Column(db.Integer)
+    carga = db.Column(db.String(50))
+    tiempo_respuesta = db.Column(db.String(50))
+    calificacion = db.Column(db.String(50))
+    mttr = db.Column(db.String(50))
+    ir = db.Column(db.String(50))
+    ath = db.Column(db.String(50))
+    recontactos = db.Column(db.String(50))
+    csat = db.Column(db.String(50))
+    sla = db.Column(db.String(50))
 
-# -------------------------------------------------
-# CREAR BD SI NO EXISTE
-# -------------------------------------------------
+# Crear BD si no existe
 with app.app_context():
-    if not os.path.exists(db_file):
-        db.create_all()
+    db.create_all()
 
 # -------------------------------------------------
 # SERVIR FRONTEND

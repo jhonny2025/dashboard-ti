@@ -22,12 +22,13 @@
         button { background:#6a0dad; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; font-weight:bold; }
         button:hover { background:#4b0082; }
         table { width:100%; border-collapse:collapse; }
-        th,td { padding:10px; border-bottom:1px solid #d8c6ff; }
+        th,td { padding:10px; border-bottom:1px solid #d8c6ff; text-align:center; }
         th { background:#6a0dad; color:white; }
         .tab-content { display:none; }
         .tab-content.active { display:block; }
         #loginCard { display:flex; justify-content:center; align-items:center; height:100vh; width:100%; }
         #loginCard .card { width:350px; }
+        td button { padding:5px; }
     </style>
 </head>
 
@@ -65,15 +66,15 @@
             <input type="date" id="fecha" />
             <input type="text" id="titulo" placeholder="Título" />
             <input type="text" id="descripcion" placeholder="Descripción" />
-            <input type="number" id="carga" placeholder="Carga" />
-            <input type="number" id="tiempo_respuesta" placeholder="Tiempo de respuesta (min)" />
-            <input type="number" id="calificacion" placeholder="Calificación" />
-            <input type="number" id="mttr" placeholder="MTTR - Tiempo promedio de resolución" />
-            <input type="number" id="ir" placeholder="IR - Issue Resolution (%)" />
-            <input type="number" id="ath" placeholder="ATH - Tiempo de gestión" />
-            <input type="number" id="recontactos" placeholder="Recontactos" />
-            <input type="number" id="csat" placeholder="CSAT (%)" />
-            <input type="number" id="sla" placeholder="SLA (%)" />
+            <input type="text" id="carga" placeholder="Carga" />
+            <input type="text" id="tiempo_respuesta" placeholder="Tiempo de respuesta (min)" />
+            <input type="text" id="calificacion" placeholder="Calificación" />
+            <input type="text" id="mttr" placeholder="MTTR - Tiempo promedio de resolución" />
+            <input type="text" id="ir" placeholder="IR - Issue Resolution (%)" />
+            <input type="text" id="ath" placeholder="ATH - Tiempo de gestión" />
+            <input type="text" id="recontactos" placeholder="Recontactos" />
+            <input type="text" id="csat" placeholder="CSAT (%)" />
+            <input type="text" id="sla" placeholder="SLA (%)" />
 
             <button onclick="guardarRegistro()">Guardar</button>
         </div>
@@ -86,10 +87,15 @@
                     <tr>
                         <th>Fecha</th>
                         <th>Título</th>
+                        <th>Descripción</th>
                         <th>Carga</th>
                         <th>Tiempo Resp.</th>
                         <th>Calif.</th>
                         <th>MTTR</th>
+                        <th>IR</th>
+                        <th>ATH</th>
+                        <th>Recontactos</th>
+                        <th>CSAT</th>
                         <th>SLA</th>
                         <th>Eliminar</th>
                     </tr>
@@ -115,8 +121,8 @@
 
 <script>
 
-// 🔹 URL base automática
-const API_BASE = window.location.origin;
+// 🔹 URL base apuntando al backend de Render
+const API_BASE = "https://dashboard-ti.onrender.com";
 
 /* LOGIN */
 function login() {
@@ -172,15 +178,20 @@ async function cargarRegistros() {
         tabla.innerHTML += `
             <tr>
                 <td>${p.fecha || ""}</td>
-                <td>${p.titulo}</td>
-                <td>${p.carga}</td>
-                <td>${p.tiempo_respuesta}</td>
-                <td>${p.calificacion}</td>
+                <td>${p.titulo || ""}</td>
+                <td>${p.descripcion || ""}</td>
+                <td>${p.carga || ""}</td>
+                <td>${p.tiempo_respuesta || ""}</td>
+                <td>${p.calificacion || ""}</td>
                 <td>${p.mttr || ""}</td>
+                <td>${p.ir || ""}</td>
+                <td>${p.ath || ""}</td>
+                <td>${p.recontactos || ""}</td>
+                <td>${p.csat || ""}</td>
                 <td>${p.sla || ""}</td>
                 <td><button onclick="eliminar(${p.id})">❌</button></td>
             </tr>`;
-        calificaciones.push(p.calificacion);
+        calificaciones.push(p.calificacion || 0);
     });
     crearGrafica(calificaciones);
 }
@@ -222,11 +233,11 @@ function importarArchivo() {
         for (const item of registrosArchivo) {
             await axios.post(`${API_BASE}/guardar`, {
                 fecha: item.fecha || "",
-                titulo: item.titulo || item.Titulo,
-                descripcion: item.descripcion || item.Descripcion,
-                carga: item.carga || item.Carga,
-                tiempo_respuesta: item.tiempo_respuesta || item.Tiempo,
-                calificacion: item.calificacion || item.Calificacion,
+                titulo: item.titulo || item.Titulo || "",
+                descripcion: item.descripcion || item.Descripcion || "",
+                carga: item.carga || item.Carga || "",
+                tiempo_respuesta: item.tiempo_respuesta || item.Tiempo || "",
+                calificacion: item.calificacion || item.Calificacion || "",
                 mttr: item.mttr || "",
                 ir: item.ir || "",
                 ath: item.ath || "",
@@ -243,3 +254,4 @@ function importarArchivo() {
 </script>
 </body>
 </html>
+
